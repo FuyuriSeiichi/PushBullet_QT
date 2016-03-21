@@ -1,0 +1,14 @@
+2016
+
+Jan.22:
+    Project created.
+
+Feb.13:
+    Add push notecapability in main window. BUG: Cannot accept '\n' in body.
+    (need generalization to link/file)
+
+Feb.29:
+    Add websocket listener prototype.
+
+Mar.21:
+    Receiving pushes and displaying notifications.
