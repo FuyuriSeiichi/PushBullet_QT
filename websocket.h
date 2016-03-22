@@ -98,7 +98,7 @@ static int ws_service_callback(
             std::string in_string( (char *)in );
             std::string nop_str( "nop" );
 
-            if ( in_string.find( nop_str ) != string::npos ) {
+           if ( in_string.find( nop_str ) != string::npos ) {
                 // Type = NOP
                 // No news is good news
             }
@@ -106,15 +106,14 @@ static int ws_service_callback(
                 Json::Reader reader;
                 Json::Value root;
                 reader.parse( in_string, root, false );
+                std::cout<< in_string << std::endl;
                 Json::Value push = root["push"];
                 Json::Value body = push["body"];
                 std::string display_cmd( "kdialog --passivepopup '" + body.asString() + "'" );
                 system( display_cmd.c_str() );
-//                for ( unsigned i = 0; i < pushes.size(); i++ ) {
-//                    Json::Value cur = pushes[i];
-//                    std::string display_cmd( "kdialog --passivepopup '" +
-//                                             cur["body"].asString() + "'" );
-//                }
+                int lastEpoch = push["modified"].asInt();
+                if ( lastSyncTimeStamp < lastEpoch )
+                    lastSyncTimeStamp = lastEpoch;
             }
             else {
                 pb_handler->getPushes( true, lastSyncTimeStamp );

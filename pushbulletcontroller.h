@@ -24,7 +24,7 @@ private:
         void saveLoginDetails();
 
         CURLcode post( string &params, string &url );
-        void setupCommonHeader();
+        void setupCommonHeader( string &filling_buffer );
 
 public:
         PushBulletController( string in_account, string in_password );
@@ -38,6 +38,7 @@ public:
         vector<Device> *devices_list;
         vector<Device>::const_iterator deviceSelected;
         string lastReturnedBuffer;
+        string lastReplyBuffer;
 
         void setAccount( string in_account );
         void setPassword( string in_password );

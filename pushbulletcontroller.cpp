@@ -5,6 +5,8 @@
 
 #define BOOL_STR(b) ((b)?"true":"false")
 
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 static inline void replaceAll(std::string &str, const std::string& from, const std::string& to)
 {
         size_t start_pos = 0;
@@ -50,8 +52,8 @@ void PushBulletController::setAccessToken( string in_accessToken )
 
 vector<Device> *PushBulletController::listDevices()
 {
-    this->setupCommonHeader();
-    this->devices_list = new vector<Device>();
+        this->setupCommonHeader( lastReturnedBuffer );
+        this->devices_list = new vector<Device>();
 
         //string devices_url( "https://api.pushbullet.com/v2/devices" );
         curl_easy_setopt( curlHandler, CURLOPT_URL, device_url.c_str() );
@@ -60,8 +62,8 @@ vector<Device> *PushBulletController::listDevices()
         if ( res == CURLE_OK &&
              jsonReader.parse( lastReturnedBuffer, jsonRoot, false ) ) {
                 // jsonRoot should be now ready parsed tree of json.
-               // cout << "RES is FINE, as:" << endl;
-               // cout << lastReturnedBuffer << endl;
+                // cout << "RES is FINE, as:" << endl;
+                // cout << lastReturnedBuffer << endl;
                 Json::Value devices = jsonRoot["devices"];
                 for ( unsigned int i = 0; i < devices.size(); i++ ) {
                         Json::Value cur = devices[i];
@@ -80,9 +82,13 @@ vector<Device> *PushBulletController::listDevices()
 // Presumption: Device is set in this->deviceSelected.
 CURLcode PushBulletController::push( string type, string title, string body )
 {
+        pthread_mutex_lock(&mutex);
         std::cout << "PushBulletController::push" << std::endl;
-        lastReturnedBuffer = "";
+        lastReplyBuffer = "";
+        this->setupCommonHeader( lastReplyBuffer );
+        // lastReturnedBuffer = "";
         curl_easy_setopt( curlHandler, CURLOPT_URL, push_url.c_str() );
+        // curl_easy_setopt( curlHandler, CURLOPT_WRITEDATA, &lastReplyBuffer );
         // params should look like:
         //char *jsonObj = "{ \"body\" : \"test body\", \"title\" : \"test title\", \"type\" : \"note\" }";
         // Preprocessing: Escape '\n' for body:
@@ -92,8 +98,10 @@ CURLcode PushBulletController::push( string type, string title, string body )
         curl_easy_setopt( curlHandler, CURLOPT_POSTFIELDS, jsonString.c_str() );
         lastResult = curl_easy_perform( curlHandler );
         if ( lastResult == CURLE_OK ) {
-                std::cout << lastReturnedBuffer << std::endl;
+                //     std::cout << lastReturnedBuffer << std::endl;
+                std::cout << "PUSH REPLY:" << lastReplyBuffer << std::endl;
         }
+        pthread_mutex_unlock(&mutex);
         return lastResult;
         //  return CURLE_OK;
 }
@@ -102,28 +110,12 @@ CURLcode PushBulletController::push( string type, string title, string body )
 CURLcode PushBulletController::getPushes( bool avoid_deleted, int since )
 {
 // GET from: https://api.pushbullet.com/v2/pushes == push_url
-    lastReturnedBuffer = "";
-    this->setupCommonHeader();
-//    curl_easy_cleanup( curlHandler );
-//    curlHandler = curl_easy_init();
-//    struct curl_slist *headers = NULL;
-//    string header_str( "Accept-Token: " );
-//    header_str += this->access_token;
-//    headers = curl_slist_append( headers, header_str.c_str() );
+        pthread_mutex_lock(&mutex);
 
-//    if ( headers == NULL ) {
-//            std::cout << "HEADER FXXKED" << std::endl;
-//    }
-//    header_str = "Content-Type: application/json";
-//    headers = curl_slist_append( headers, header_str.c_str() );
-//    curl_easy_setopt( curlHandler, CURLOPT_HTTPHEADER, headers );
-//    curl_easy_setopt( curlHandler, CURLOPT_HTTPAUTH, (long)CURLAUTH_BASIC );
-//    curl_easy_setopt( curlHandler, CURLOPT_USERNAME, this->access_token.c_str() );
-//    curl_easy_setopt( curlHandler, CURLOPT_PASSWORD, "any_password" );
-//    curl_easy_setopt( curlHandler, CURLOPT_WRITEFUNCTION, WriteCallback );
-//    curl_easy_setopt( curlHandler, CURLOPT_WRITEDATA, &lastReturnedBuffer );
+        lastReturnedBuffer = "";
+        this->setupCommonHeader( lastReturnedBuffer );
 
-      //  string since_str = string( "\"" + since + "\"" );
+        //  string since_str = string( "\"" + since + "\"" );
         string url = string( push_url + "?" + params_string( {
                                 { "active", BOOL_STR( avoid_deleted ) },
                                 { "modified_after", std::to_string( since ) },
@@ -135,17 +127,20 @@ CURLcode PushBulletController::getPushes( bool avoid_deleted, int since )
         std::cout << "NEWURL:" << url << std::endl;
 
         curl_easy_setopt( curlHandler, CURLOPT_URL, url.c_str() );
+        curl_easy_setopt( curlHandler, CURLOPT_HTTPGET, 1 );
         lastResult = curl_easy_perform( curlHandler );
         if ( lastResult == CURLE_OK ) {
-                std::cout << lastReturnedBuffer << std::endl;
+                std::cout << "GetPush:" << lastReturnedBuffer << std::endl;
                 jsonReader.parse( std::string( lastReturnedBuffer ), jsonRoot, false );
                 // Now jsonRoot is ready to use for others.
         }
+        pthread_mutex_unlock(&mutex);
+
         return lastResult;
 }
 
 // ======================== PRIVATE UTILITIES ========================
-void PushBulletController::setupCommonHeader()
+void PushBulletController::setupCommonHeader( string &filling_buffer )
 {
         struct curl_slist *headers = NULL;
         string header_str( "Accept-Token: " );
@@ -161,21 +156,5 @@ void PushBulletController::setupCommonHeader()
         curl_easy_setopt( curlHandler, CURLOPT_USERNAME, this->access_token.c_str() );
         curl_easy_setopt( curlHandler, CURLOPT_PASSWORD, "any_password" );
         curl_easy_setopt( curlHandler, CURLOPT_WRITEFUNCTION, WriteCallback );
-        curl_easy_setopt( curlHandler, CURLOPT_WRITEDATA, &lastReturnedBuffer );
-}
-
-CURLcode PushBulletController::post( string &params, string &url )
-{
-        lastReturnedBuffer = "";
-        // params should look like:
-        //char* jsonObj = "{ \"name\" : \"Pedro\" , \"age\" : \"22\" }";
-        curl_easy_setopt( curlHandler, CURLOPT_URL, url.c_str() );
-
-        // Setup "write-out" supports of libcurl.
-        curl_easy_setopt( curlHandler, CURLOPT_WRITEFUNCTION, WriteCallback );
-        curl_easy_setopt( curlHandler, CURLOPT_WRITEDATA, &lastReturnedBuffer );
-        if ( params != "" )
-                curl_easy_setopt( curlHandler, CURLOPT_POSTFIELDS, params.c_str() );
-        lastResult = curl_easy_perform( curlHandler );
-        return lastResult;
+        curl_easy_setopt( curlHandler, CURLOPT_WRITEDATA, &filling_buffer );
 }
