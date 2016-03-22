@@ -102,6 +102,20 @@ static int ws_service_callback(
                 // Type = NOP
                 // No news is good news
             }
+            else if ( in_string.find( "mirror" ) != string::npos ) {
+                Json::Reader reader;
+                Json::Value root;
+                reader.parse( in_string, root, false );
+                Json::Value push = root["push"];
+                Json::Value body = push["body"];
+                std::string display_cmd( "kdialog --passivepopup '" + body.asString() + "'" );
+                system( display_cmd.c_str() );
+//                for ( unsigned i = 0; i < pushes.size(); i++ ) {
+//                    Json::Value cur = pushes[i];
+//                    std::string display_cmd( "kdialog --passivepopup '" +
+//                                             cur["body"].asString() + "'" );
+//                }
+            }
             else {
                 pb_handler->getPushes( true, lastSyncTimeStamp );
                 Json::Value push_bodies = pb_handler->jsonRoot["body"];
@@ -116,14 +130,18 @@ static int ws_service_callback(
                 }
                 //std::string lastEpoch = cur["modified"].asString();
                 cur = pushes[0];
-                lastSyncTimeStamp = cur["modified"].asInt();
-                lastSyncTimeStamp++;
+                int lastEpoch = cur["modified"].asInt();
+                if ( lastEpoch > lastSyncTimeStamp ) {
+                    lastSyncTimeStamp = lastEpoch;
+                    lastSyncTimeStamp++;
+                }
             }
             break;
         }
         case LWS_CALLBACK_CLIENT_WRITEABLE :
                 printf( "    On writeable is called. send byebye message\n" );
-                //     websocket_write_back(wsi, "Byebye! See you later", -1);
+                //     websocket_
+                (wsi, "Byebye! See you later", -1);
                 //     writeable_flag = 1;
                 break;
 
