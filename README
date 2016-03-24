@@ -3,3 +3,5 @@ Dependencies:
 libcurl
 jsoncpp
 libwebsockets
+
+No proper login process yet. Require an access token.

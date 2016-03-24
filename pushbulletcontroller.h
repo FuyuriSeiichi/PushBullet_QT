@@ -23,7 +23,6 @@ private:
         CURLcode lastResult;
         void saveLoginDetails();
 
-        CURLcode post( string &params, string &url );
         void setupCommonHeader( string &filling_buffer );
 
 public:
@@ -47,7 +46,8 @@ public:
 
         vector<Device> *listDevices();
 				
-        CURLcode push( string type, string title, string body );
+     //   CURLcode push( string type, string title, string body );
+        CURLcode push( string type, string title, string body, string device_iden );
         CURLcode getPushes( bool avoid_deleted, int since ); // Official: active:=whether to avoid deleted pushes.
 };
 

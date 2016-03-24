@@ -90,7 +90,7 @@ static int ws_service_callback(
                 break;
 
         case LWS_CALLBACK_CLIENT_RECEIVE: {
-               // THIS WON'T DO ON REAL-TIME:
+               // THIS WON'T DO ON REAL-TIME because it's NOT main thread.
                 //printf( "    Client recvived:%s\n", (char *)in);
                // How to issue KDE 4 notification:
                 //  system( "kdialog --passivepopup 'who is there'" );
@@ -103,6 +103,8 @@ static int ws_service_callback(
                 // No news is good news
             }
             else if ( in_string.find( "mirror" ) != string::npos ) {
+               // Type = Mirror.
+               // This is broadcasted from other device.
                 Json::Reader reader;
                 Json::Value root;
                 reader.parse( in_string, root, false );

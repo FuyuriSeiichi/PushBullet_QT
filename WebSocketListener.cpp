@@ -22,11 +22,7 @@ void WebSocketListener::start()
 
 void WebSocketListener::timerEvent(QTimerEvent *timerEvent)
 {
-    qDebug( "WebSocketListener:: POLLING timerEvent" );
-    lws_service( context, 0 );
-    // For testing only:
-//    counter++;
-//    if ( counter == 10 )
-//        emit finished();
+    //qDebug( "WebSocketListener:: POLLING timerEvent" );
+    //lws_service( context, 0 );
 }
 

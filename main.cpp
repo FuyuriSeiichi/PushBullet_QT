@@ -1,11 +1,10 @@
 #include "LoginWindow.h"
 #include "pushbulletcontroller.h"
 #include <QApplication>
+
 //#include "WebSocketListener.h"
 
 PushBulletController *pb_handler;
-
-void initWebSocketListener();
 
 int main(int argc, char *argv[])
 {

@@ -69,18 +69,26 @@ vector<Device> *PushBulletController::listDevices()
                         Json::Value cur = devices[i];
                         // Device::{iden|nickname|type}
                         Device *newDevice = new Device();
-                        newDevice->iden = cur["iden"].asString();
-                        newDevice->nickname = cur["nickname"].asString();
-                        newDevice->type = cur["type"].asString();
-                        this->devices_list->push_back( *newDevice );
+                        if ( !cur["nickname"].asString().empty() ) {
+                            newDevice->iden = cur["iden"].asString();
+                            newDevice->nickname = cur["nickname"].asString();
+                            newDevice->type = cur["type"].asString();
+                            this->devices_list->push_back( *newDevice );
+                        }
                 }
+                // Add "ALL" device
+                Device *allDevice = new Device();
+                allDevice->iden = string( "ALL" );
+                allDevice->nickname = string( "ALL" );
+                allDevice->type = string( "" );
+                this->devices_list->push_back( *allDevice );
         }
         lastReturnedBuffer = "";
         return this->devices_list;
 }
 
 // Presumption: Device is set in this->deviceSelected.
-CURLcode PushBulletController::push( string type, string title, string body )
+CURLcode PushBulletController::push( string type, string title, string body, string device_iden )
 {
         pthread_mutex_lock(&mutex);
         std::cout << "PushBulletController::push" << std::endl;
@@ -93,8 +101,20 @@ CURLcode PushBulletController::push( string type, string title, string body )
         //char *jsonObj = "{ \"body\" : \"test body\", \"title\" : \"test title\", \"type\" : \"note\" }";
         // Preprocessing: Escape '\n' for body:
         replaceAll( body, "\n", "\\n" );
-
-        string jsonString = "{ \"body\" : \"" + body + "\", \"title\" : \"" + title + "\", \"type\" : \"" + type + "\" }";
+        string jsonString;
+        if ( device_iden.empty() || device_iden == "ALL" ) {
+            jsonString = "{ \"body\" : \"" + body +
+                    "\", \"title\" : \"" + title +
+                    "\", \"type\" : \"" + type +
+                    "\" }";
+        }
+        else {
+            jsonString = "{ \"body\" : \"" + body +
+                    "\", \"title\" : \"" + title +
+                    "\", \"type\" : \"" + type +
+                    "\", \"device_iden\" : \"" + device_iden +
+                    "\" }";
+        }
         curl_easy_setopt( curlHandler, CURLOPT_POSTFIELDS, jsonString.c_str() );
         lastResult = curl_easy_perform( curlHandler );
         if ( lastResult == CURLE_OK ) {

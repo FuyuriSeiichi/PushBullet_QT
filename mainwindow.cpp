@@ -52,7 +52,11 @@ void MainWindow::on_buttonSubmit_clicked()
 {
     string *text = new string( ui->plaintexteditNote->toPlainText().toUtf8() );
     string *title = new string( ui->lineeditTitle->text().toUtf8() );
-    pb_handler->push( "note", *title, *text );
+
+    if ( pb_handler->deviceSelected->iden == "ALL" )
+        pb_handler->push( "note", *title, *text, "ALL" );
+    else
+        pb_handler->push( "note", *title, *text, pb_handler->deviceSelected->iden );
 }
 
 void MainWindow::setupSignalSlotToWebSocketListener()

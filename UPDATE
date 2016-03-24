@@ -15,3 +15,7 @@ Mar.21:
 
 Mar.22:
     Add support for mirrored notifications.
+
+Mar.24:
+    Add saving & loading support for access token, storing at ~/.config/pushbullet.cfg
+    Target device pushing now enabled.

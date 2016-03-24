@@ -2,6 +2,8 @@
 #define LOGINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
+#include <QDir>
 #include "pushbulletcontroller.h"
 
 namespace Ui {
@@ -20,7 +22,12 @@ private slots:
     void on_Submit_clicked();
 
 private:
+    QString fileSettings;
     Ui::LoginWindow *ui;
+    void loadCfg();
+    void saveCfg();
+    bool is_file_exist( const char *fileName );
+    void showEvent( QShowEvent* event );
 
 //    PushBulletController *pb_handler;
 };
