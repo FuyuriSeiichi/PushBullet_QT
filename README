@@ -5,3 +5,4 @@ jsoncpp
 libwebsockets
 
 No proper login process yet. Require an access token.
+Currently for KDE4.

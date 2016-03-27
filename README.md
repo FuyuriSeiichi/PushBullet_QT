@@ -6,3 +6,4 @@ Requirement:
 - libCurl
 - JsonCpp
 - libWebsockets
+- An access token from official site.

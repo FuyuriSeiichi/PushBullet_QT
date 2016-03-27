@@ -19,3 +19,7 @@ Mar.22:
 Mar.24:
     Add saving & loading support for access token, storing at ~/.config/pushbullet.cfg
     Target device pushing now enabled.
+
+Mar.27:
+    Avoid notifying about dismissed message.
+    Removed unused file : websocket.c

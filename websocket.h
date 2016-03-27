@@ -91,9 +91,9 @@ static int ws_service_callback(
 
         case LWS_CALLBACK_CLIENT_RECEIVE: {
                // THIS WON'T DO ON REAL-TIME because it's NOT main thread.
-                //printf( "    Client recvived:%s\n", (char *)in);
+               //printf( "    Client recvived:%s\n", (char *)in);
                // How to issue KDE 4 notification:
-                //  system( "kdialog --passivepopup 'who is there'" );
+               //  system( "kdialog --passivepopup 'who is there'" );
 
             std::string in_string( (char *)in );
             std::string nop_str( "nop" );
@@ -111,8 +111,12 @@ static int ws_service_callback(
                 std::cout<< in_string << std::endl;
                 Json::Value push = root["push"];
                 Json::Value body = push["body"];
-                std::string display_cmd( "kdialog --passivepopup '" + body.asString() + "'" );
-                system( display_cmd.c_str() );
+                // What about knotify4
+                Json::Value push_type = push["type"];
+                if ( push_type.asString() != "dismissal" ) {
+                    std::string display_cmd( "kdialog --passivepopup '" + body.asString() + "'" );
+                    system( display_cmd.c_str() );
+                }
                 int lastEpoch = push["modified"].asInt();
                 if ( lastSyncTimeStamp < lastEpoch )
                     lastSyncTimeStamp = lastEpoch;
@@ -125,9 +129,11 @@ static int ws_service_callback(
                 for ( unsigned i = 0; i< pushes.size(); i++ ) {
                     cur = pushes[i];
                     std::string body = cur["body"].asString();
-                    std::string display_cmd( "kdialog --passivepopup '" + body + "'" );
-                    std::cout << display_cmd << endl;
-                    system( display_cmd.c_str() );
+                    if ( cur["dismissed"].asString() == "false" ) {  // Don't display the dismissed!
+                        std::string display_cmd( "kdialog --passivepopup '" + body + "'" );
+                        std::cout << display_cmd << endl;
+                        system( display_cmd.c_str() );
+                    }
                 }
                 //std::string lastEpoch = cur["modified"].asString();
                 cur = pushes[0];

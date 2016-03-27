@@ -6,6 +6,8 @@
 #include <QThread>
 #include <QString>
 
+#include <kstatusnotifieritem.h>
+
 #include "WebSocketListener.h"
 
 namespace Ui {
@@ -28,6 +30,8 @@ private slots:
     void on_comboboxDevices_currentIndexChanged( int index );
     void on_buttonSubmit_clicked();
     void websocket_check();
+
+    void on_pushButton_clicked();
 
 private:
     void updateDevicesComboBox();

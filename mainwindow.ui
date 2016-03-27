@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Message window</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="verticalLayoutWidget">
@@ -85,42 +85,15 @@
           </rect>
          </property>
         </widget>
-        <widget class="QWidget" name="gridLayoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>70</x>
-           <y>140</y>
-           <width>160</width>
-           <height>80</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout"/>
-        </widget>
+        <zorder>plaintexteditNote</zorder>
+        <zorder>buttonSubmit</zorder>
        </widget>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="buttonSubmit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>380</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>380</width>
-         <height>32</height>
-        </size>
-       </property>
        <property name="text">
-        <string>Send</string>
+        <string>Push</string>
        </property>
       </widget>
      </item>
@@ -135,6 +108,9 @@
      <width>400</width>
      <height>22</height>
     </rect>
+   </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
    </property>
    <widget class="QMenu" name="menuOption">
     <property name="title">

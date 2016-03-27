@@ -86,3 +86,8 @@ void MainWindow::websocket_quit()
 {
     qDebug( "websocket thread just quits!" );
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+
+}
