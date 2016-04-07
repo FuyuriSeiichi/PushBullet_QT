@@ -50,13 +50,27 @@ void MainWindow::on_comboboxDevices_currentIndexChanged( int index )
 
 void MainWindow::on_buttonSubmit_clicked()
 {
-    string *text = new string( ui->plaintexteditNote->toPlainText().toUtf8() );
+    string *text;
     string *title = new string( ui->lineeditTitle->text().toUtf8() );
 
+    QTabWidget *tabwidgetFunctions = ui->tabwidgetFunctions;
+
+    std::string type = "";
+
+    //std::cout << tabwidgetFunctions->currentWidget()->accessibleName().toStdString() << std::endl;
+
+    if ( tabwidgetFunctions->currentWidget()->accessibleName() == "note" ) {
+        type = std::string( "note" );
+        text = new string( ui->plaintexteditNote->toPlainText().toUtf8() );
+    }
+    else {
+        type = std::string( "link" );
+        text = new string( ui->plaintexteditLink->toPlainText().toUtf8() );
+    }
     if ( pb_handler->deviceSelected->iden == "ALL" )
-        pb_handler->push( "note", *title, *text, "ALL" );
+        pb_handler->push( type.c_str(), *title, *text, "ALL" );
     else
-        pb_handler->push( "note", *title, *text, pb_handler->deviceSelected->iden );
+        pb_handler->push( type.c_str(), *title, *text, pb_handler->deviceSelected->iden );
 }
 
 void MainWindow::setupSignalSlotToWebSocketListener()

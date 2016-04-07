@@ -54,6 +54,9 @@
         <number>1</number>
        </property>
        <widget class="QWidget" name="tabLinkPush">
+        <property name="accessibleName">
+         <string>link</string>
+        </property>
         <property name="text" stdset="0">
          <string/>
         </property>
@@ -72,6 +75,9 @@
         </widget>
        </widget>
        <widget class="QWidget" name="tabNotePush">
+        <property name="accessibleName">
+         <string>note</string>
+        </property>
         <attribute name="title">
          <string>Note</string>
         </attribute>
@@ -85,8 +91,6 @@
           </rect>
          </property>
         </widget>
-        <zorder>plaintexteditNote</zorder>
-        <zorder>buttonSubmit</zorder>
        </widget>
       </widget>
      </item>
