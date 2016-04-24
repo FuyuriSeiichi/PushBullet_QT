@@ -122,13 +122,18 @@ static int ws_service_callback(
                     lastSyncTimeStamp = lastEpoch;
             }
             else {
+               // Normal / !Mirrored
                 pb_handler->getPushes( true, lastSyncTimeStamp );
                 Json::Value push_bodies = pb_handler->jsonRoot["body"];
                 Json::Value pushes = pb_handler->jsonRoot["pushes"];
                 Json::Value cur;
                 for ( unsigned i = 0; i< pushes.size(); i++ ) {
                     cur = pushes[i];
+                    // It could be a URL OR a normal BODY:
                     std::string body = cur["body"].asString();
+                    if ( body == "" )
+                        body = cur["url"].asString();
+
                     if ( cur["dismissed"].asString() == "false" ) {  // Don't display the dismissed!
                         std::string display_cmd( "kdialog --passivepopup '" + body + "'" );
                         std::cout << display_cmd << endl;
