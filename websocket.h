@@ -229,9 +229,22 @@ int wss_connect()
         char path[46];
         strcpy( path, "/websocket/" );
         strcpy( path + 11, pb_handler->access_token.c_str() );
-        wsi = lws_client_connect(context, "stream.pushbullet.com", 443, 2, // 2:WSS
-                                 path, "stream.pushbullet.com:443", NULL,
-                                 protocol.name, -1);
+//        wsi = lws_client_connect(context, "stream.pushbullet.com", 443, 2, // 2:WSS
+//                                 path, "stream.pushbullet.com:443", NULL,
+//                                 protocol.name, -1);
+        lws_client_connect_info lws_client_info;
+        lws_client_info.context = context;
+        lws_client_info.address = "stream.pushbullet.com";
+        lws_client_info.port = 443;
+        lws_client_info.ssl_connection = 2;  // WSS
+        lws_client_info.path = path;
+        lws_client_info.host = "stream.pushbullet.com:443";
+        lws_client_info.origin = NULL;
+        lws_client_info.protocol = protocol.name;
+        lws_client_info.ietf_version_or_minus_one = -1;
+        lws_client_connect_info *ptr = &lws_client_info;
+
+        wsi = lws_client_connect_via_info( ptr );
         if ( wsi == NULL ) {
                 printf( "[Main] wsi create error.\n" );
                 return -1;
