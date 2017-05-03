@@ -193,30 +193,73 @@ static void *pthread_routine(void *tool_in)
 
 struct lws_context *context;
 
-int wss_connect()
-{
-        struct lws_context_creation_info info;
-        struct lws *wsi = NULL;
-        struct lws_protocols protocol;
-        lastSyncTimeStamp = std::time( 0 );
-
-        memset(&info, 0, sizeof info);
-        info.port = CONTEXT_PORT_NO_LISTEN;
-        info.iface = NULL;
-        info.protocols = &protocol;
-        info.ssl_cert_filepath = NULL;
-        info.ssl_private_key_filepath = NULL;
-        info.extensions = lws_get_internal_extensions();
-        info.gid = -1;
-        info.uid = -1;
-        info.options = 0;
-
+/*
         protocol.name  = "PushBullet protocol";
         protocol.callback = &ws_service_callback;
         protocol.per_session_data_size = sizeof(struct session_data);
         protocol.rx_buffer_size = 0;
         protocol.id = 0;
         protocol.user = NULL;
+*/
+/*  LATEST DEFINITION:
+ struct lws_protocols {
+          const char *name;
+          lws_callback_function *callback;
+          size_t per_session_data_size;
+          size_t rx_buffer_size;
+          unsigned int id;
+          void *user; 
+          size_t tx_packet_size;
+  }; */ 
+static const struct lws_protocols protocols[] = {
+	{
+		"PushBullet protocol",
+		//callback_dumb_increment,
+		&ws_service_callback,
+		sizeof( struct session_data ),  // per_session_data_size
+		0,  // rx_buffer_size
+		0,  // id: IGNORED by libwebsocket
+		NULL,  // user: IGNORED by libwebsocket
+		0   // tx_packet_size: HOW THE HELL SHOULD I KNOW?
+	},
+	/* { */
+	/* 	"lws-mirror-protocol", */
+	/* 	callback_lws_mirror, */
+	/* 	0, */
+	/* 	128, */
+	/* }, { */
+	/* 	"lws-test-raw-client", */
+	/* 	callback_test_raw_client, */
+	/* 	0, */
+	/* 	128 */
+	/* }, */
+	{ NULL, NULL, 0, 0, 0, NULL, 0 } /* end */
+};
+
+int wss_connect()
+{
+        struct lws_context_creation_info info;
+        struct lws *wsi = NULL;
+        //struct lws_protocols protocol;
+        lastSyncTimeStamp = std::time( 0 );
+
+        memset( &info, 0, sizeof info );
+        info.port = CONTEXT_PORT_NO_LISTEN;
+        info.iface = NULL;
+	info.protocols = protocols;
+        info.ssl_cert_filepath = NULL;
+        info.ssl_private_key_filepath = NULL;
+        info.extensions = lws_get_internal_extensions();
+        info.gid = -1;
+        info.uid = -1;
+        info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+
+        /* protocol.name  = "PushBullet protocol"; */
+        /* protocol.callback = &ws_service_callback; */
+        /* protocol.per_session_data_size = sizeof(struct session_data); */
+        /* protocol.rx_buffer_size = 0; */
+        /* protocol.id = 0; */
+        /* protocol.user = NULL; */
 
         context = lws_create_context(&info);
         printf( "[Main] context created.\n" );
@@ -233,18 +276,22 @@ int wss_connect()
 //                                 path, "stream.pushbullet.com:443", NULL,
 //                                 protocol.name, -1);
         lws_client_connect_info lws_client_info;
+        memset( &lws_client_info, 0, sizeof lws_client_info );
         lws_client_info.context = context;
         lws_client_info.address = "stream.pushbullet.com";
         lws_client_info.port = 443;
-        lws_client_info.ssl_connection = 2;  // WSS
+        lws_client_info.ssl_connection = LCCSCF_USE_SSL |
+            LCCSCF_ALLOW_SELFSIGNED |
+            LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;  // for WSS connection
         lws_client_info.path = path;
-        lws_client_info.host = "stream.pushbullet.com:443";
+        lws_client_info.host = "stream.pushbullet.com";
         lws_client_info.origin = NULL;
-        lws_client_info.protocol = protocol.name;
+        //lws_client_info.protocol = protocol.name;
+	lws_client_info.protocol = protocols[0].name;
         lws_client_info.ietf_version_or_minus_one = -1;
         lws_client_connect_info *ptr = &lws_client_info;
 
-        wsi = lws_client_connect_via_info( ptr );
+        wsi = lws_client_connect_via_info( ptr );  // CURRENT WSI FAIL AT SSL_new !!! CHECK Vhost !!
         if ( wsi == NULL ) {
                 printf( "[Main] wsi create error.\n" );
                 return -1;

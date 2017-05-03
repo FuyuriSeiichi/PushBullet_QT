@@ -23,3 +23,6 @@ Mar.24:
 Mar.27:
     Avoid notifying about dismissed message.
     Removed unused file : websocket.c
+
+May.03:
+    Fix compatibility with latest libwebsockets.
