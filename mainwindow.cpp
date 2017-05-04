@@ -33,7 +33,7 @@ void MainWindow::updateDevicesComboBox()
         for ( vector<Device>::const_iterator iter = pb_handler->devices_list->begin();
               iter != pb_handler->devices_list->end();
               iter ++ ) {
-            if ( iter->nickname.empty() == FALSE ) {
+            if ( iter->nickname.empty() == false ) {
                 QString qstrNickname = QString::fromUtf8( iter->nickname.c_str() );
                 QVariant qvarArg( QString( iter->iden.c_str() ) );
                 this->ui->comboboxDevices->addItem( qstrNickname, qvarArg );
