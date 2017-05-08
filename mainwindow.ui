@@ -43,6 +43,13 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Target Device</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QComboBox" name="comboboxDevices"/>
      </item>
      <item>
@@ -110,19 +117,31 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
     <bool>true</bool>
    </property>
-   <widget class="QMenu" name="menuOption">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Option</string>
+     <string>&amp;File</string>
     </property>
    </widget>
-   <addaction name="menuOption"/>
+   <widget class="QMenu" name="menuDevice">
+    <property name="title">
+     <string>&amp;Device</string>
+    </property>
+    <addaction name="actionRegisterDevice"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuDevice"/>
   </widget>
+  <action name="actionRegisterDevice">
+   <property name="text">
+    <string>&amp;Register this device...</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

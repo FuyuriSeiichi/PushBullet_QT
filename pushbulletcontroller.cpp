@@ -30,10 +30,10 @@ PushBulletController::PushBulletController()
         curlHandler = curl_easy_init();
 }
 
-bool PushBulletController::login()
-{       
-        return false;
-}
+// bool PushBulletController::login()
+// {       
+//         return false;
+// }
 
 void PushBulletController::setAccount( string input )
 {
@@ -157,6 +157,58 @@ CURLcode PushBulletController::getPushes( bool avoid_deleted, int since )
         pthread_mutex_unlock(&mutex);
 
         return lastResult;
+}
+
+string PushBulletController::registerDevice( string nickname, string manufacturer, string model, string typeIcon ) {
+  pthread_mutex_lock(&mutex);
+  lastReturnedBuffer = "";
+  this->setupCommonHeader( lastReturnedBuffer );
+
+  curl_easy_setopt( curlHandler, CURLOPT_URL, device_url.c_str() );
+  curl_easy_setopt( curlHandler, CURLOPT_WRITEDATA, &lastReplyBuffer );
+  // params should look like:
+  //char *jsonObj = "{ \"body\" : \"test body\", \"title\" : \"test title\", \"type\" : \"note\" }";
+  // Preprocessing: Escape '\n' for body:
+  //replaceAll( body, "\n", "\\n" );
+  string jsonString;
+  jsonString = "{ \"nickname\" : \"" + nickname +
+              "\", \"model\" : \"" + model +
+              "\", \"manufacturer\" : \"" + manufacturer +
+              "\", \"push_token\" : \"" + "" +
+              "\", \"app_version\" : \"" + "8623" +
+              "\", \"icon\" : \"" + "laptop" +
+              "\", \"has_sms\" : " + "false" +
+              " }";
+  std::cout << "jsonString:   " << jsonString << std::endl;
+  curl_easy_setopt( curlHandler, CURLOPT_POSTFIELDS, jsonString.c_str() );
+  lastResult = curl_easy_perform( curlHandler );
+  if ( lastResult == CURLE_OK ) {  // Register SUCCESS
+          //     std::cout << lastReturnedBuffer << std::endl;
+          std::cout << "Create-Device REPLY:" << lastReplyBuffer << std::endl;
+          //    Parse the JSON response for "iden" value:
+          if ( jsonReader.parse( lastReplyBuffer, jsonRoot, false ) ) {
+//                  Json::Value devices = jsonRoot["devices"];
+//                  for ( unsigned int i = 0; i < devices.size(); i++ ) {
+//                          Json::Value cur = devices[i];
+//                          // Device::{iden|nickname|type}
+//                          Device *newDevice = new Device();
+//                          if ( !cur["nickname"].asString().empty() ) {
+//                              newDevice->iden = cur["iden"].asString();
+//                              newDevice->nickname = cur["nickname"].asString();
+//                              newDevice->type = cur["type"].asString();
+//                              this->devices_list->push_back( *newDevice );
+//                          }
+//                  }
+//                  // Add "ALL" device
+//                  Device *allDevice = new Device();
+//                  allDevice->iden = string( "ALL" );
+//                  allDevice->nickname = string( "ALL" );
+//                  allDevice->type = string( "" );
+//                  this->devices_list->push_back( *allDevice );
+          }
+  }
+  pthread_mutex_unlock(&mutex);
+  return "lastResult";
 }
 
 // ======================== PRIVATE UTILITIES ========================

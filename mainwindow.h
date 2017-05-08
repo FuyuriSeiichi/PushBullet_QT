@@ -31,16 +31,19 @@ private slots:
     void on_buttonSubmit_clicked();
     void websocket_check();
 
-    void on_pushButton_clicked();
-
+//    void on_pushButton_clicked();
+    void on_actionRegisterDevice_triggered();
 private:
     void updateDevicesComboBox();
     void setupSignalSlotToWebSocketListener();
     WebSocketListener *websocket_listener;
     std::string token;
     QThread *websocket_thread;
-    Ui::MainWindow *ui;
+
     int period = 2000;
+
+    Ui::MainWindow *ui;
+    QAction *registerNewDevice;
 
 };
 

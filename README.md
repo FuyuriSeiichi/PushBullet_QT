@@ -1,9 +1,9 @@
-Pushbullet QT client
+ushbullet QT client
 =====================
 A minimal client of PushBullet
 -----------------
 Requirement:
 - libCurl
 - JsonCpp
-- libWebsockets
+- libWebsockets ver. >= 1.7
 - An access token from official site.

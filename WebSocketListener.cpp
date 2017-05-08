@@ -22,7 +22,7 @@ void WebSocketListener::start()
 
 void WebSocketListener::timerEvent(QTimerEvent *timerEvent)
 {
-    //qDebug( "WebSocketListener:: POLLING timerEvent" );
-    //lws_service( context, 0 );
+  //qDebug( "WebSocketListener:: POLLING timerEvent" );
+  return;
 }
 

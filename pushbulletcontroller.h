@@ -42,18 +42,22 @@ public:
         void setAccount( string in_account );
         void setPassword( string in_password );
         void setAccessToken( string in_accessToken );
-        bool login();  // This will store id_token on succeed try, return FALSE on failure.
+        //bool login();  // This will store id_token on succeed try, return FALSE on failure.
+	bool isConnected();
 
         vector<Device> *listDevices();
 				
      //   CURLcode push( string type, string title, string body );
         CURLcode push( string type, string title, string body, string device_iden );
         CURLcode getPushes( bool avoid_deleted, int since ); // Official: active:=whether to avoid deleted pushes.
+        string registerDevice( string nickname, string manufacturer, string model, string typeIcon );  // Return new device token on success!!
+
 };
 
+
 struct MemoryStruct {
-				char *memory;
-				size_t size;
+	char *memory;
+	size_t size;
 };
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)

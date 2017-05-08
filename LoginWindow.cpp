@@ -27,9 +27,7 @@ void LoginWindow::loadCfg()
         pb_handler->setAccessToken( access_token.toStdString() );
         pb_handler->listDevices(); // This update this->device_list !!
         MainWindow *mainWindow = new MainWindow( this, pb_handler->access_token );
-	this->saveCfg();
-        //this->hide();
-	//this->close();
+        this->saveCfg();
 	QMainWindow::close();
 	mainWindow->show();
     }

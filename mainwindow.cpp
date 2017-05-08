@@ -3,6 +3,7 @@
 #include "pushbulletcontroller.h"
 //#include "websocket.h"
 #include <iostream>
+#include "RegisterDeviceDialog.h"
 
 extern PushBulletController *pb_handler;
 
@@ -101,7 +102,14 @@ void MainWindow::websocket_quit()
     qDebug( "websocket thread just quits!" );
 }
 
-void MainWindow::on_pushButton_clicked()
-{
+//void MainWindow::on_pushButton_clicked()
+//{
 
+//}
+
+void MainWindow::on_actionRegisterDevice_triggered()
+{
+  //std::cout << "ACTION REGISTER DEVICE TRIGGERED!" << std::endl;
+  RegisterDeviceDialog *registerDeviceDialog = new RegisterDeviceDialog();
+  registerDeviceDialog->exec();
 }

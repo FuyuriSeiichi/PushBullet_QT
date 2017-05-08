@@ -16,9 +16,11 @@ SOURCES += main.cpp\
     pushbulletcontroller.cpp \
     mainwindow.cpp \
     LoginWindow.cpp \
-    WebSocketListener.cpp
+    WebSocketListener.cpp \
+    RegisterDeviceDialog.cpp
 
-QMAKE_CXXFLAGS += -std=c++11    
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_DEFAULT_INCDIRS=\\
 
 HEADERS  += \
     pushbulletcontroller.h \
@@ -26,11 +28,13 @@ HEADERS  += \
     mainwindow.h \
     LoginWindow.h \
     websocket.h \
-    WebSocketListener.h
+    WebSocketListener.h \
+    RegisterDeviceDialog.h
 
 FORMS    += \
     mainwindow.ui \
-    loginwindow.ui
+    loginwindow.ui \
+    newdevice.ui
 
 unix:!macx: LIBS += -L/usr/lib64/ -lcurl
 
@@ -46,3 +50,5 @@ unix:!macx: LIBS += -L/usr/lib64/ -lwebsockets
 
 INCLUDEPATH += /usr/include
 DEPENDPATH += /usr/include
+
+DISTFILES +=
