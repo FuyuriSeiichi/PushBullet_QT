@@ -26,3 +26,6 @@ Mar.27:
 
 May.03:
     Fix compatibility with latest libwebsockets.
+
+May.08:
+    Add new device dialog to enable possibility to register the device running PushBullet_QT.
