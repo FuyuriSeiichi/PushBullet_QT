@@ -1,4 +1,4 @@
-ushbullet QT client
+Pushbullet QT client
 =====================
 A minimal client of PushBullet
 -----------------
