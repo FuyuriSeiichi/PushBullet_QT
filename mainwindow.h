@@ -6,7 +6,8 @@
 #include <QThread>
 #include <QString>
 
-#include <kstatusnotifieritem.h>
+//#include <kstatusnotifieritem.h>
+#include <KNotifications/kstatusnotifieritem.h>
 
 #include "WebSocketListener.h"
 

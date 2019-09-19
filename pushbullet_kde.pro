@@ -48,6 +48,17 @@ DEPENDPATH += /usr/include/jsoncpp
 
 unix:!macx: LIBS += -L/usr/lib64/ -lwebsockets
 
+unix:!macx: LIBS += -L/usr/lib64/ -lKF5Notifications
+
+INCLUDEPATH += /usr/include/KF5
+INCLUDEPATH += /usr/include/KF5/KNotifications
+DEPENDPATH += /usr/include/KF5
+
+unix:!macx: LIBS += -L/usr/lib64/ -lQt5DBus
+
+INCLUDEPATH += /usr/include/qt5/QtDBus
+DEPENDPATH += /usr/include/qt5/QtDBus
+
 INCLUDEPATH += /usr/include
 DEPENDPATH += /usr/include
 
