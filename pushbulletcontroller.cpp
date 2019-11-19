@@ -30,11 +30,6 @@ PushBulletController::PushBulletController()
         curlHandler = curl_easy_init();
 }
 
-// bool PushBulletController::login()
-// {       
-//         return false;
-// }
-
 void PushBulletController::setAccount( string input )
 {
         this->account = input;
@@ -60,10 +55,8 @@ vector<Device> *PushBulletController::listDevices()
 
         CURLcode res = curl_easy_perform( curlHandler );
         if ( res == CURLE_OK &&
-             jsonReader.parse( lastReturnedBuffer, jsonRoot, false ) ) {
+             jsonReader->parse( lastReturnedBuffer.c_str(), lastReturnedBuffer.c_str() + lastReturnedBuffer.length(), &jsonRoot, nullptr ) ) {
                 // jsonRoot should be now ready parsed tree of json.
-                // cout << "RES is FINE, as:" << endl;
-                // cout << lastReturnedBuffer << endl;
                 Json::Value devices = jsonRoot["devices"];
                 for ( unsigned int i = 0; i < devices.size(); i++ ) {
                         Json::Value cur = devices[i];
@@ -151,7 +144,9 @@ CURLcode PushBulletController::getPushes( bool avoid_deleted, int since )
         lastResult = curl_easy_perform( curlHandler );
         if ( lastResult == CURLE_OK ) {
                 std::cout << "GetPush:" << lastReturnedBuffer << std::endl;
-                jsonReader.parse( std::string( lastReturnedBuffer ), jsonRoot, false );
+         //       jsonReader.parse( std::string( lastReturnedBuffer ), jsonRoot, false );
+                jsonReader->parse( lastReturnedBuffer.c_str(), lastReturnedBuffer.c_str() + lastReturnedBuffer.length(), &jsonRoot, nullptr );
+
                 // Now jsonRoot is ready to use for others.
         }
         pthread_mutex_unlock(&mutex);
@@ -159,6 +154,7 @@ CURLcode PushBulletController::getPushes( bool avoid_deleted, int since )
         return lastResult;
 }
 
+// stub: typeIcon
 string PushBulletController::registerDevice( string nickname, string manufacturer, string model, string typeIcon ) {
   pthread_mutex_lock(&mutex);
   lastReturnedBuffer = "";
@@ -186,7 +182,7 @@ string PushBulletController::registerDevice( string nickname, string manufacture
           //     std::cout << lastReturnedBuffer << std::endl;
           std::cout << "Create-Device REPLY:" << lastReplyBuffer << std::endl;
           //    Parse the JSON response for "iden" value:
-          if ( jsonReader.parse( lastReplyBuffer, jsonRoot, false ) ) {
+          if ( jsonReader->parse( lastReplyBuffer.c_str(), lastReplyBuffer.c_str() + lastReplyBuffer.length(), &jsonRoot, nullptr ) ) {
 //                  Json::Value devices = jsonRoot["devices"];
 //                  for ( unsigned int i = 0; i < devices.size(); i++ ) {
 //                          Json::Value cur = devices[i];
@@ -214,11 +210,11 @@ string PushBulletController::registerDevice( string nickname, string manufacture
 // ======================== PRIVATE UTILITIES ========================
 void PushBulletController::setupCommonHeader( string &filling_buffer )
 {
-        struct curl_slist *headers = NULL;
+        struct curl_slist *headers = nullptr;
         string header_str( "Accept-Token: " );
         header_str += this->access_token;
         headers = curl_slist_append( headers, header_str.c_str() );
-        if ( headers == NULL ) {
+        if ( headers == nullptr ) {
                 std::cout << "HEADER FXXKED" << std::endl;
         }
         header_str = "Content-Type: application/json";

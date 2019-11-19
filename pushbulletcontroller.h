@@ -33,7 +33,8 @@ public:
         string password;
         string access_token;
         Json::Value jsonRoot;   // will contains the root value after parsing.
-        Json::Reader jsonReader;
+        Json::CharReaderBuilder builder;
+        Json::CharReader *jsonReader = builder.newCharReader();
         vector<Device> *devices_list;
         vector<Device>::const_iterator deviceSelected;
         string lastReturnedBuffer;
@@ -43,8 +44,7 @@ public:
         void setPassword( string in_password );
         void setAccessToken( string in_accessToken );
         //bool login();  // This will store id_token on succeed try, return FALSE on failure.
-	bool isConnected();
-
+        bool isConnected();
         vector<Device> *listDevices();
 				
      //   CURLcode push( string type, string title, string body );

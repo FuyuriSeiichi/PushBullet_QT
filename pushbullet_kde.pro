@@ -11,6 +11,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pushbullet_kde
 TEMPLATE = app
 
+target.path = /usr/local/bin/
+desktop.path = /usr/share/applications
+desktop.files += pushbullet_kde.desktop
+
+INSTALLS += target desktop
+
 
 SOURCES += main.cpp\
     pushbulletcontroller.cpp \

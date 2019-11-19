@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Pushbullet KDE
+Comment=Mini Pushbullet client for KDE 4/5
+Exec=pushbullet_kde
+Icon=pushbullet
+Categories=Network;

@@ -70,98 +70,102 @@ static int ws_service_callback(
         void *in, size_t len)
 {
 
-        switch ( reason ) {
+  switch ( reason ) {
 
-        case LWS_CALLBACK_CLIENT_ESTABLISHED:
-                printf( "    Connect with server success.\n" );
-                connection_flag = 1;
-                break;
+  case LWS_CALLBACK_CLIENT_ESTABLISHED:
+    printf( "    Connect with server success.\n" );
+    connection_flag = 1;
+    break;
 
-        case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-                printf( "    Connect with server error.\n" );
-                destroy_flag = 1;
-                connection_flag = 0;
-                break;
+  case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
+    printf( "    Connect with server error.\n" );
+    destroy_flag = 1;
+    connection_flag = 0;
+    break;
 
-        case LWS_CALLBACK_CLOSED:
-                printf( "    LWS_CALLBACK_CLOSED\n" );
-                destroy_flag = 1;
-                connection_flag = 0;
-                break;
+  case LWS_CALLBACK_CLOSED:
+    printf( "    LWS_CALLBACK_CLOSED\n" );
+    destroy_flag = 1;
+    connection_flag = 0;
+    break;
 
-        case LWS_CALLBACK_CLIENT_RECEIVE: {
-               // THIS WON'T DO ON REAL-TIME because it's NOT main thread.
-               //printf( "    Client recvived:%s\n", (char *)in);
-               // How to issue KDE 4 notification:
-               //  system( "kdialog --passivepopup 'who is there'" );
+  case LWS_CALLBACK_CLIENT_RECEIVE: {
+    // THIS WON'T DO ON REAL-TIME because it's NOT main thread.
+    //printf( "    Client recvived:%s\n", (char *)in);
+    // How to issue KDE 4 notification:
+    //  system( "kdialog --passivepopup 'who is there'" );
 
-            std::string in_string( (char *)in );
-            std::string nop_str( "nop" );
+    std::string in_string( (char *)in );
+    std::string nop_str( "nop" );
 
-           if ( in_string.find( nop_str ) != string::npos ) {
-                // Type = NOP
-                // No news is good news
-            }
-            else if ( in_string.find( "mirror" ) != string::npos ) {
-               // Type = Mirror.
-               // This is broadcasted from other device.
-                Json::Reader reader;
-                Json::Value root;
-                reader.parse( in_string, root, false );
-                std::cout<< in_string << std::endl;
-                Json::Value push = root["push"];
-                Json::Value body = push["body"];
-                // What about knotify4
-                Json::Value push_type = push["type"];
-                if ( push_type.asString() != "dismissal" ) {
-                    std::string display_cmd( "kdialog --passivepopup '" + body.asString() + "'" );
-                    system( display_cmd.c_str() );
-                }
-                int lastEpoch = push["modified"].asInt();
-                if ( lastSyncTimeStamp < lastEpoch )
-                    lastSyncTimeStamp = lastEpoch;
-            }
-            else {
-               // Normal / !Mirrored
-                pb_handler->getPushes( true, lastSyncTimeStamp );
-                Json::Value push_bodies = pb_handler->jsonRoot["body"];
-                Json::Value pushes = pb_handler->jsonRoot["pushes"];
-                Json::Value cur;
-                for ( unsigned i = 0; i< pushes.size(); i++ ) {
-                    cur = pushes[i];
-                    // It could be a URL OR a normal BODY:
-                    std::string body = cur["body"].asString();
-                    if ( body == "" )
-                        body = cur["url"].asString();
+    if ( in_string.find( nop_str ) != string::npos ) {
+      // Type = NOP
+      // No news is good news
+    }
+    else if ( in_string.find( "mirror" ) != string::npos ) {
+      // Type = Mirror.
+      // This is broadcasted from other device.
+      Json::CharReaderBuilder builder;
+      Json::CharReader *reader = builder.newCharReader();
+      Json::Value root;
+      const char *in_string_beg = in_string.c_str();
+      std::string *err_str = new std::string();
+      reader->parse( in_string_beg, in_string_beg + in_string.length(), &root, err_str );
+      std::cout<< in_string << std::endl;
+      Json::Value push = root["push"];
+      Json::Value body = push["body"];
+      // What about knotify4
+      Json::Value push_type = push["type"];
+      if ( push_type.asString() != "dismissal" ) {
+	std::string display_cmd( "kdialog --passivepopup '" + body.asString() + "'" );
+	std::cout << body.asString() << std::endl;
+	system( display_cmd.c_str() );
+      }
+      int lastEpoch = push["modified"].asInt();
+      if ( lastSyncTimeStamp < lastEpoch )
+	lastSyncTimeStamp = lastEpoch;
+    }
+    else {
+      // Normal / !Mirrored
+      pb_handler->getPushes( true, lastSyncTimeStamp );
+      Json::Value push_bodies = pb_handler->jsonRoot["body"];
+      Json::Value pushes = pb_handler->jsonRoot["pushes"];
+      Json::Value cur;
+      for ( unsigned i = 0; i< pushes.size(); i++ ) {
+	cur = pushes[i];
+	// It could be a URL OR a normal BODY:
+	std::string body = cur["body"].asString();
+	if ( body == "" )
+	  body = cur["url"].asString();
 
-                    if ( cur["dismissed"].asString() == "false" ) {  // Don't display the dismissed!
-                        std::string display_cmd( "kdialog --passivepopup '" + body + "'" );
-                        std::cout << display_cmd << endl;
-                        system( display_cmd.c_str() );
-                    }
-                }
-                //std::string lastEpoch = cur["modified"].asString();
-                cur = pushes[0];
-                int lastEpoch = cur["modified"].asInt();
-                if ( lastEpoch > lastSyncTimeStamp ) {
-                    lastSyncTimeStamp = lastEpoch;
-                    lastSyncTimeStamp++;
-                }
-            }
-            break;
-        }
-        case LWS_CALLBACK_CLIENT_WRITEABLE :
-                printf( "    On writeable is called. send byebye message\n" );
-                //     websocket_
-                (wsi, "Byebye! See you later", -1);
-                //     writeable_flag = 1;
-                break;
+	if ( cur["dismissed"].asString() == "false" ) {  // Don't display the dismissed!
+	  std::string display_cmd( "kdialog --passivepopup '" + body + "'" );
+	  std::cout << display_cmd << endl;
+	  system( display_cmd.c_str() );
+	}
+      }
+      //std::string lastEpoch = cur["modified"].asString();
+      cur = pushes[0];
+      int lastEpoch = cur["modified"].asInt();
+      if ( lastEpoch > lastSyncTimeStamp ) {
+	lastSyncTimeStamp = lastEpoch;
+	lastSyncTimeStamp++;
+      }
+    }
+    break;
+  }
+  case LWS_CALLBACK_CLIENT_WRITEABLE :
+    printf( "    On writeable is called. send byebye message\n" );
+    //     websocket_
+    (wsi, "Byebye! See you later", -1);
+    //     writeable_flag = 1;
+    break;
 
-        default:
-                break;
-        }
+  default:
+    break;
+  }
 
-        return 0;
+  return 0;
 }
 
 //static void *pthread_routine(void *tool_in)
@@ -212,28 +216,28 @@ struct lws_context *context;
           size_t tx_packet_size;
   }; */ 
 static const struct lws_protocols protocols[] = {
-	{
-		"PushBullet protocol",
-		//callback_dumb_increment,
-		&ws_service_callback,
-		sizeof( struct session_data ),  // per_session_data_size
-		0,  // rx_buffer_size
-		0,  // id: IGNORED by libwebsocket
-		NULL,  // user: IGNORED by libwebsocket
-		0   // tx_packet_size: HOW THE HELL SHOULD I KNOW?
-	},
-	/* { */
-	/* 	"lws-mirror-protocol", */
-	/* 	callback_lws_mirror, */
-	/* 	0, */
-	/* 	128, */
-	/* }, { */
-	/* 	"lws-test-raw-client", */
-	/* 	callback_test_raw_client, */
-	/* 	0, */
-	/* 	128 */
-	/* }, */
-	{ NULL, NULL, 0, 0, 0, NULL, 0 } /* end */
+						 {
+						  "PushBullet protocol",
+						  //callback_dumb_increment,
+						  &ws_service_callback,
+						  sizeof( struct session_data ),  // per_session_data_size
+						  0,  // rx_buffer_size
+						  0,  // id: IGNORED by libwebsocket
+						  NULL,  // user: IGNORED by libwebsocket
+						  0   // tx_packet_size: HOW THE HELL SHOULD I KNOW?
+						 },
+						 /* { */
+						 /* 	"lws-mirror-protocol", */
+						 /* 	callback_lws_mirror, */
+						 /* 	0, */
+						 /* 	128, */
+						 /* }, { */
+						 /* 	"lws-test-raw-client", */
+						 /* 	callback_test_raw_client, */
+						 /* 	0, */
+						 /* 	128 */
+						 /* }, */
+						 { NULL, NULL, 0, 0, 0, NULL, 0 } /* end */
 };
 
 int wss_connect()
@@ -249,7 +253,7 @@ int wss_connect()
 	info.protocols = protocols;
         info.ssl_cert_filepath = NULL;
         info.ssl_private_key_filepath = NULL;
-        info.extensions = lws_get_internal_extensions();
+        //info.extensions = lws_get_internal_extensions();
         info.gid = -1;
         info.uid = -1;
         info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
