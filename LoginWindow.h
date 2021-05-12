@@ -27,7 +27,6 @@ private:
     void loadCfg();
     void saveCfg();
     bool is_file_exist( const char *fileName );
-    void showEvent( QShowEvent* event );
 
 //    PushBulletController *pb_handler;
 };

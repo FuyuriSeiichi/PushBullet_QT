@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMenu>
+#include <QSystemTrayIcon>
+
 #include <QTimer>
 #include <QThread>
 #include <QString>
@@ -37,6 +40,11 @@ private slots:
 private:
     void updateDevicesComboBox();
     void setupSignalSlotToWebSocketListener();
+    // == Systray setup ==
+    void setupTrayActions();
+    void createTrayIcon();
+    // ===================
+
     WebSocketListener *websocket_listener;
     std::string token;
     QThread *websocket_thread;
@@ -44,8 +52,12 @@ private:
     int period = 2000;
 
     Ui::MainWindow *ui;
-    QAction *registerNewDevice;
-
+    // Systray Related:
+    QAction *restoreAction;
+    QAction *minimizeAction;
+    QAction *quitAction;
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
 };
 
 #endif // MAINWINDOW_H

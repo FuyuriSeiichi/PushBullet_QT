@@ -49,14 +49,6 @@ bool LoginWindow::is_file_exist(const char *fileName)
     return infile.good();
 }
 
-void LoginWindow::showEvent( QShowEvent *event )
-{
-   QMainWindow::show();
-   if ( is_file_exist( fileSettings.toStdString().c_str() ) ) {
-       loadCfg();  // This will skip LoginWindow & move on to mainWindow.
-   }
-}
-
 void LoginWindow::on_Submit_clicked()
 {
     pb_handler->setAccessToken( this->ui->lineeditAccessToken ->text().toStdString() );

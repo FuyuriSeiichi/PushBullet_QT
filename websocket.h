@@ -157,7 +157,7 @@ static int ws_service_callback(
   case LWS_CALLBACK_CLIENT_WRITEABLE :
     printf( "    On writeable is called. send byebye message\n" );
     //     websocket_
-    (wsi, "Byebye! See you later", -1);
+    // (wsi, "Byebye! See you later", -1);
     //     writeable_flag = 1;
     break;
 

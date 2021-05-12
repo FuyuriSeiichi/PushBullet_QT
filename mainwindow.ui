@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>400</width>
-    <height>400</height>
+    <height>380</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -53,12 +53,19 @@
       <widget class="QComboBox" name="comboboxDevices"/>
      </item>
      <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Title:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLineEdit" name="lineeditTitle"/>
      </item>
      <item>
       <widget class="QTabWidget" name="tabwidgetFunctions">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tabLinkPush">
         <property name="accessibleName">
@@ -117,7 +124,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>26</height>
+     <height>32</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

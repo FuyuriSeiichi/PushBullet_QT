@@ -11,21 +11,27 @@ MainWindow::MainWindow(QWidget *parent, std::string input_token) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    this->websocket_thread = new QThread;
-    this->websocket_listener = new WebSocketListener;
-    websocket_listener->moveToThread( websocket_thread );
-    this->token = input_token;
-    this->setupSignalSlotToWebSocketListener();
-    this->updateDevicesComboBox();
-    websocket_thread->start();
+  ui->setupUi( this );
+  setupTrayActions();
+  createTrayIcon();
+  trayIcon->setIcon( QIcon( QString( "bullethole.png" ) ) );
+  trayIcon->show();
+
+  this->websocket_thread = new QThread;
+  this->websocket_listener = new WebSocketListener;
+  websocket_listener->moveToThread( websocket_thread );
+
+  this->token = input_token;
+  this->setupSignalSlotToWebSocketListener();
+  this->updateDevicesComboBox();
+  websocket_thread->start();
  //   wss_connect();
 }
 
 MainWindow::~MainWindow()
 {
-    //delete websocketListener;
-    delete ui;
+  //delete websocketListener;
+  delete ui;
 }
 
 void MainWindow::updateDevicesComboBox()
@@ -102,14 +108,35 @@ void MainWindow::websocket_quit()
     qDebug( "websocket thread just quits!" );
 }
 
-//void MainWindow::on_pushButton_clicked()
-//{
-
-//}
-
 void MainWindow::on_actionRegisterDevice_triggered()
 {
   //std::cout << "ACTION REGISTER DEVICE TRIGGERED!" << std::endl;
   RegisterDeviceDialog *registerDeviceDialog = new RegisterDeviceDialog();
   registerDeviceDialog->exec();
+}
+
+//========================== Systray related routines ===============================
+void MainWindow::createTrayIcon()
+{
+  trayIconMenu = new QMenu( this );
+  trayIconMenu->addAction( minimizeAction );
+//    trayIconMenu->addAction(maximizeAction);
+  trayIconMenu->addAction( restoreAction );
+  trayIconMenu->addSeparator();
+  trayIconMenu->addAction(quitAction);
+
+  trayIcon = new QSystemTrayIcon( this );
+  trayIcon->setContextMenu(trayIconMenu);
+}
+
+void MainWindow::setupTrayActions()
+{
+  minimizeAction = new QAction(tr("Mi&nimize"), this);
+  connect(minimizeAction, &QAction::triggered, this, &QWidget::hide);
+
+  restoreAction = new QAction(tr("&Restore"), this);
+  connect(restoreAction, &QAction::triggered, this, &QWidget::showNormal);
+
+  quitAction = new QAction(tr("&Quit"), this);
+  connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 }
