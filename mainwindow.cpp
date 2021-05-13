@@ -126,13 +126,13 @@ void MainWindow::createTrayIcon()
 
   trayIcon = new QSystemTrayIcon( this );
   trayIcon->setContextMenu(trayIconMenu);
+
+  // This enable click icon to restore
+  connect( trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 }
 
 void MainWindow::setupTrayActions()
 {
-  // This enable click icon to restore
-  connect( trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated) ;
-
   minimizeAction = new QAction( tr("Mi&nimize"), this );
   connect( minimizeAction, &QAction::triggered, this, &QWidget::hide );
 
