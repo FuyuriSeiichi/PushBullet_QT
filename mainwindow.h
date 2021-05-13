@@ -34,7 +34,9 @@ private slots:
     void on_comboboxDevices_currentIndexChanged( int index );
     void on_buttonSubmit_clicked();
     void websocket_check();
-
+    // == Systray setup ==
+    void iconActivated( QSystemTrayIcon::ActivationReason reason );
+    // ====================
 //    void on_pushButton_clicked();
     void on_actionRegisterDevice_triggered();
 private:

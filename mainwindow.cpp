@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "pushbulletcontroller.h"
-//#include "websocket.h"
 #include <iostream>
 #include "RegisterDeviceDialog.h"
 
@@ -131,12 +130,28 @@ void MainWindow::createTrayIcon()
 
 void MainWindow::setupTrayActions()
 {
-  minimizeAction = new QAction(tr("Mi&nimize"), this);
-  connect(minimizeAction, &QAction::triggered, this, &QWidget::hide);
+  // This enable click icon to restore
+  connect( trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated) ;
 
-  restoreAction = new QAction(tr("&Restore"), this);
-  connect(restoreAction, &QAction::triggered, this, &QWidget::showNormal);
+  minimizeAction = new QAction( tr("Mi&nimize"), this );
+  connect( minimizeAction, &QAction::triggered, this, &QWidget::hide );
 
-  quitAction = new QAction(tr("&Quit"), this);
-  connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+  restoreAction = new QAction( tr("&Restore"), this );
+  connect( restoreAction, &QAction::triggered, this, &QWidget::showNormal );
+
+  quitAction = new QAction( tr("&Quit"), this );
+  connect( quitAction, &QAction::triggered, qApp, &QCoreApplication::quit );
+}
+
+void MainWindow::iconActivated( QSystemTrayIcon::ActivationReason reason )
+{
+  switch (reason) {
+  case QSystemTrayIcon::Trigger:
+      restoreAction->trigger();
+      break;
+  case QSystemTrayIcon::DoubleClick:
+  case QSystemTrayIcon::MiddleClick:
+  default:
+    ;
+  }
 }
