@@ -1,7 +1,9 @@
 Pushbullet minimal KDE client
 =====================
-A minimal client of PushBullet, which is running on top of KDE, tested in KDE4/5, x86-64bit and Arm64 (RaspberryPi4.)
+A minimal client of PushBullet tested in KDE4/5, x86-64 and Arm64.
 -----------------
+![Alt text](scrshot.png?raw=true "Optional Title")
+
 Requirement:
 - QT 4/5 and KDE 4/5
 - libCurl
