@@ -10,7 +10,6 @@ struct Push
         float created;
         float modified;
         std::string type;
-        bool dismissed;
-        
-}
+        bool dismissed;      
+};
         

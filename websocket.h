@@ -105,6 +105,7 @@ static int ws_service_callback(
     else if ( in_string.find( "mirror" ) != string::npos ) {
       // Type = Mirror.
       // This is broadcasted from other device.
+			// check : https://docs.pushbullet.com/#mirrored-notifications
       Json::CharReaderBuilder builder;
       Json::CharReader *reader = builder.newCharReader();
       Json::Value root;
