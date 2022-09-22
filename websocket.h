@@ -9,7 +9,8 @@
 #include <stdlib.h>
 #include <libwebsockets.h>
 #include <ctime>
-#include <pushbulletcontroller.h>
+#include "pushbulletcontroller.h"
+#include <KNotification>
 
 #define KGRN "\033[0;32;32m"
 #define KCYN "\033[0;36m"
@@ -63,6 +64,14 @@ static int websocket_write_back(struct lws *wsi_in, char *str, int str_size_in)
         return n;
 }
 
+int notify()
+{
+	KNotification *notification = new KNotification( "New Push" );
+	notification->setText( "PushBullet notification" );
+	//notification->setActions( { "Open chat" } );
+	notification->sendEvent();
+	return 0;
+}
 
 static int ws_service_callback(
         struct lws *wsi,
@@ -120,6 +129,7 @@ static int ws_service_callback(
       if ( push_type.asString() != "dismissal" ) {
 	std::string display_cmd( "kdialog --passivepopup '" + body.asString() + "'" );
 	std::cout << body.asString() << std::endl;
+	//notify();
 	system( display_cmd.c_str() );
       }
       int lastEpoch = push["modified"].asInt();

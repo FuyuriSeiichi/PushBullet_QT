@@ -13,6 +13,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui)
 find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Widgets)
+find_package(KF5Notifications)
 
 add_executable(pushbullet_kde 
     LoginWindow.cpp
@@ -36,6 +37,7 @@ target_include_directories(pushbullet_kde PRIVATE
 target_link_libraries(pushbullet_kde PRIVATE
     Qt::Core
     Qt::Gui
+    KF5::Notifications
 )
 
 target_compile_options(pushbullet_kde PUBLIC
